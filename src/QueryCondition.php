@@ -29,7 +29,7 @@ class QueryCondition
     }
 
     /**
-     * Set SQL fraction generated when condition is true.
+     * Set SQL fraction which is generated when condition is true.
      */
     public function then(...$args): QueryCondition
     {
@@ -38,7 +38,7 @@ class QueryCondition
     }
 
     /**
-     * Set SQL fraction generated when condition is false.
+     * Set SQL fraction which is generated when condition is false.
      */
     public function else(...$args): QueryCondition
     {

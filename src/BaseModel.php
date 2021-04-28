@@ -46,13 +46,13 @@ abstract class BaseModel
         }
     }
 
-    protected function switchObjectsOrder(string $tableName, $objectA, $objectB, ?string $orderColumn = 'order'): bool
+    protected function switchRowPosition(string $tableName, $row1, $row2, ?string $orderColumn = 'order'): bool
     {
         $this->db->beginTransaction();
         try {
-            $this->db->query('UPDATE ?name', $tableName, ' SET ?name', $orderColumn, ' = ? ', 0, 'WHERE id = ? ', $objectB->id);
-            $this->db->query('UPDATE ?name', $tableName, ' SET ?name', $orderColumn, ' = ? ', $objectB->order, 'WHERE id = ? ', $objectA->id);
-            $this->db->query('UPDATE ?name', $tableName, ' SET ?name', $orderColumn, ' = ? ', $objectA->order, 'WHERE id = ? ', $objectB->id);
+            $this->db->query('UPDATE ?name', $tableName, ' SET ?name', $orderColumn, ' = ? ', 0, 'WHERE id = ? ', $row2->id);
+            $this->db->query('UPDATE ?name', $tableName, ' SET ?name', $orderColumn, ' = ? ', $row2->order, 'WHERE id = ? ', $row1->id);
+            $this->db->query('UPDATE ?name', $tableName, ' SET ?name', $orderColumn, ' = ? ', $row1->order, 'WHERE id = ? ', $row2->id);
         } catch (\Exception $ex) {
             $this->db->rollback();
             return false;
@@ -61,7 +61,7 @@ abstract class BaseModel
         return true;
     }
 
-    protected function condition($condition): QueryCondition
+    protected function if($condition): QueryCondition
     {
         return new QueryCondition($this->db, (bool)$condition);
     }
