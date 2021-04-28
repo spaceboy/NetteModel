@@ -6,7 +6,6 @@ namespace Spaceboy\NetteModel;
 
 use Nette\Database\Connection;
 use Nette\Utils\ArrayHash;
-use Spaceboy\BaseModel\QueryCondition;
 
 abstract class BaseModel
 {
