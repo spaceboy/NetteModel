@@ -5,16 +5,21 @@ declare(strict_types=1);
 namespace Spaceboy\NetteModel;
 
 use Nette\Database\Connection;
+use Nette\Database\Explorer;
 use Nette\Utils\ArrayHash;
 
 abstract class BaseModel
 {
     protected Connection $db;
 
+    protected Explorer $explorer;
+
     public function __construct(
-        Connection $db
+        Connection $db,
+        Explorer $explorer
     ) {
         $this->db = $db;
+        $this->explorer = $explorer;
     }
 
     /**
@@ -24,21 +29,24 @@ abstract class BaseModel
      * @param string $idColumn
      * @return mixed|null ID of updated/inserted row, null on error
      */
-    protected function insertUpdate(string $tableName, ArrayHash $data, string $idColumn = 'id')
+    public function insertUpdate(string $tableName, ArrayHash $data, string $idColumn = 'id')
     {
-        if ($data->offsetExists($idColumn)) {
-            $id = $data->offsetGet($idColumn);
-            $data->offsetUnset($idColumn);
-        } else {
-            $id = false;
-        }
+        $id = (
+            $data->offsetExists($idColumn)
+            ? $data->offsetGet($idColumn)
+            : null
+        );
+        $data->offsetUnset($idColumn);
 
         try {
             if ($id) {
-                $this->db->query('UPDATE ?name', $tableName, ' SET ? ', $data, 'WHERE ?name', $idColumn, ' = ?', (int)$id);
+                $this->explorer->table($tableName)
+                    ->where($idColumn, $id)
+                    ->update($data);
                 return $id;
             } else {
-                $this->db->query('INSERT INTO ?name', $tableName, ' ?' , $data);
+                $this->explorer->table($tableName)
+                    ->insert($data);
                 return $this->db->getInsertId();
             }
         } catch (\Exception $ex) {
@@ -46,7 +54,7 @@ abstract class BaseModel
         }
     }
 
-    protected function switchRowPosition(string $tableName, $row1, $row2, ?string $orderColumn = 'order'): bool
+    public function switchRowPosition(string $tableName, $row1, $row2, ?string $orderColumn = 'order'): bool
     {
         $this->db->beginTransaction();
         try {
