@@ -54,13 +54,19 @@ abstract class BaseModel
         }
     }
 
-    public function switchRowPosition(string $tableName, $row1, $row2, ?string $orderColumn = 'order'): bool
+    public function switchRowPosition(string $tableName, $row1, $row2, ?string $orderColumn = 'order', ?string $idColumn = 'id'): bool
     {
         $this->db->beginTransaction();
         try {
-            $this->db->query('UPDATE ?name', $tableName, ' SET ?name', $orderColumn, ' = ? ', 0, 'WHERE id = ? ', $row2->id);
-            $this->db->query('UPDATE ?name', $tableName, ' SET ?name', $orderColumn, ' = ? ', $row2->order, 'WHERE id = ? ', $row1->id);
-            $this->db->query('UPDATE ?name', $tableName, ' SET ?name', $orderColumn, ' = ? ', $row1->order, 'WHERE id = ? ', $row2->id);
+            $this->explorer->table($tableName)
+                ->where($idColumn, $row2->id)
+                ->update([$orderColumn => 0]);
+            $this->explorer->table($tableName)
+                ->where($idColumn, $row1->id)
+                ->update([$orderColumn => $row2->order]);
+            $this->explorer->table($tableName)
+                ->where($idColumn, $row2->id)
+                ->update([$orderColumn => $row1->order]);
         } catch (\Exception $ex) {
             $this->db->rollback();
             return false;
