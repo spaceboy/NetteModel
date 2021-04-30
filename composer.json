@@ -1,7 +1,7 @@
 {
 	"name": "spaceboy/nette-model",
 	"description": "BaseModel for Nette application",
-	"keywords": ["nette", "database" "model", "php"],
+	"keywords": ["nette", "database", "model", "php"],
 	"type": "library",
     "autoload": {
         "classmap": ["src"]
