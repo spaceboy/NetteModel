@@ -45,9 +45,9 @@ abstract class BaseModel
                     ->update($data);
                 return $id;
             } else {
-                $this->explorer->table($tableName)
-                    ->insert($data);
-                return $this->db->getInsertId();
+                return $this->explorer->table($tableName)
+                    ->insert($data)
+                    ->{$idColumn};
             }
         } catch (\Exception $ex) {
             return null;
